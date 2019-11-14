@@ -22,6 +22,7 @@
             @endif
 
               <form action="{{ route('diary.store') }}" method="POST">
+              <!-- ララベルの画面からしか触れない -->
                 @csrf
                 <div class="form-group">
                   <label for="title">タイトル</label>
