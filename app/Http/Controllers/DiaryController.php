@@ -48,4 +48,17 @@ class DiaryController extends Controller
         return redirect()->route('diary.index');
         // return view('diaries.create');二重投稿が起こる
     }
+//日記を削除するためのメソッド
+    public function destroy(int $id)
+    {
+        //diaryモデルをしようして、IDが一致する日記の取得
+        $diary = Diary::find($id);
+
+        //取得した日記の削除
+        $diary->delete();
+
+        //一覧画面にリダイレクト
+        return redirect()->route('diary.index');
+
+    }
 }

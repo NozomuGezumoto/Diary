@@ -11,6 +11,7 @@
 |
 */
 
-route::get('/','DiaryController@index')->name('diary.index');
-route::get('/diary/create','DiaryController@create')->name('diary.create');
-route::POST('/diary/store','DiaryController@store')->name('diary.store');
+Route::get('/','DiaryController@index')->name('diary.index');
+Route::get('/diary/create','DiaryController@create')->name('diary.create');
+Route::post('/diary/store','DiaryController@store')->name('diary.store');
+Route::delete('/diary/{id}','DiaryController@destroy')->name('diary.destroy');
