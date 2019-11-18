@@ -7,6 +7,8 @@ use App\Diary;
 
 use App\Http\Requests\CreateDiary;
 
+use Illuminate\Support\Facades\Auth;
+
 class DiaryController extends Controller
 {
     //一覧画面を表示する
@@ -40,6 +42,7 @@ class DiaryController extends Controller
         // Diaryモデルを使って、Dbに日記を保存
         $diary->title = $request->title;
         $diary->body = $request->body;
+        $diary->user_id = Auth::user()->id;
 
         // DBに保存
         $diary->save();
