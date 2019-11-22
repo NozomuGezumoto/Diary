@@ -25,6 +25,21 @@
       <button class="btn btn-danger">削除</button>
       </form>
     @endif <!-- formメソッドではPOST or GET 送信しかできないので＠で記載 -->
+    <div class="mt-3 ml-3">
+
+      @if (Auth::check() && $diary->likes->contains(function ($user) {
+        return $user->id === Auth::user()->id;
+      }))
+          {{-- {{ログインしているかつこの日記にいいねしている場合 }} --}}
+          <i class="fas fa-heart fa-lg text-danger js-dislike"></i>
+      @else
+          {{-- {{いいねしていない場合}} --}}
+          <i class="far fa-heart fa-lg text-danger js-like"></i>
+      @endif
+      
+    <input type="hidden" class="diary-id" value="{{ $diary->id }}">
+    <span class="js-like-num">{{ $diary->likes->count() }}</span>
+    </div>
 
   </div>
   @endforeach
