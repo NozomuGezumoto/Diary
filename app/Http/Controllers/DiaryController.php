@@ -7,6 +7,8 @@ use App\Diary;
 
 use App\Http\Requests\CreateDiary;
 
+use Illuminate\Support\Facades\Auth;
+
 class DiaryController extends Controller
 {
     //一覧画面を表示する
@@ -15,7 +17,10 @@ class DiaryController extends Controller
         // diariesテーブルのデータを全件取得
         //取得した結果を画面で確認
 
-        $diaries = Diary::all();
+        // $diaries = Diary::all();
+
+        $diaries = Diary::with('likes')->orderBy('id','desc')->get();
+
         // dd($diaries);
         //dd() : var_dump と die が同時に実行される
         //
@@ -40,6 +45,7 @@ class DiaryController extends Controller
         // Diaryモデルを使って、Dbに日記を保存
         $diary->title = $request->title;
         $diary->body = $request->body;
+        $diary->user_id = Auth::user()->id;
 
         // DBに保存
         $diary->save();
@@ -54,6 +60,10 @@ class DiaryController extends Controller
         //diaryモデルをしようして、IDが一致する日記の取得
         $diary = Diary::find($id);
 
+         //ログインユーザーが日記の投稿者かチェックする
+        if (Auth::user()->id != $diary->user_id)
+        abort(403);
+
         //取得した日記の削除
         $diary->delete();
 
@@ -62,11 +72,16 @@ class DiaryController extends Controller
 
     }
     //編集画面を表示する
-    public function edit(int $id)
+    public function edit(Diary $diary)
     {
+        //ログインユーザーが日記の投稿者かチェックする
+    if (Auth::user()->id != $diary->user_id){
+        abort(403);
+    }
+
         // dd($id);
         //受け取ったIDを元に日記を取得
-        $diary = Diary::find($id);
+        // $diary = Diary::find($id);
 
         //編集画面を返す。同時に画面に取得した日記を渡す
 
@@ -85,11 +100,36 @@ class DiaryController extends Controller
         $diary = Diary::find($id);
         //取得した日記のタイトル、本文を書き換える
 
+         //ログインユーザーが日記の投稿者かチェックする
+        if (Auth::user()->id != $diary->user_id)
+            abort(403);
+
         $diary->title = $request->title;
         $diary->body = $request->body;
         //DBに保存
         $diary->save();
         //一覧ページにリダイレクト
         return redirect()->route('diary.index');
+    }
+    //いいねが押された時の処理
+    public function like(int $id)
+    {
+        //いいねされた日記の取得
+        $diary = Diary::find($id);
+
+        //attach:多対多のデータを登録するメゾット
+        $diary->likes()->attach(Auth::user()->id);
+
+        //通信が成功した事を返す
+        return response()->json(['success' => 'いいね完了！']);
+    }
+    // いいね解除が押された時の処理
+    public function dislike(int $id)
+    {
+        $diary = Diary::find($id);
+
+        $diary->likes()->detach(AUth::user()->id);
+
+        return response()->json(['success' => 'いいね解除完了！']);
     }
 }

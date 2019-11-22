@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layouts.app')
 @section('title', '編集')
 @section('content')
 <section class="container m-5">
